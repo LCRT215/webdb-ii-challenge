@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const knex = require("knex");
+const ZoosModel = require("./zoos-model");
 
 const config = {
   client: "sqlite3",
@@ -12,8 +13,7 @@ const db = knex(config);
 
 router.post("/", (req, res) => {
   const name = req.body;
-
-  db("zoos")
+  ZoosModel.add()
     .insert(name)
     .then(input => {
       res.status(200).json(input);
@@ -24,15 +24,15 @@ router.post("/", (req, res) => {
 });
 
 router.get("/", (req, res) => {
-  db("zoos")
+  ZoosModel.find()
     .then(zoos => res.status(200).json(zoos))
     .catch(err => res.status(500).json(err));
 });
 
 router.get("/:id", (req, res) => {
-  db("zoos")
-    .where({ id: req.params.id })
-    .first()
+  ZoosModel.findById(req.params.id)
+    // .where({ id: req.params.id })
+    // .first()
     .then(zoo => {
       if (zoo) {
         res.status(200).json(zoo);
@@ -46,19 +46,19 @@ router.get("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  db("zoos")
-    .where({ id: req.params.id })
+  //   db("zoos")
+  //     .where({ id: req.params.id })
+  ZoosModel.remove(req.params.id)
     .del()
     .then(zoo => res.status(200).json(zoo))
     .catch(err => res.status(500).json(err));
 });
 
 router.put("/:id", (req, res) => {
-  const changes = req.body;
-
-  db("zoos")
-    .where({ id: req.params.id })
-    .update(changes)
+  ZoosModel.update(req.params.id, req.body)
+    //   const changes = req.body;
+    // .where({ id: req.params.id })
+    // .update(changes)
     .then(zoo => res.status(200).json(zoo))
     .catch(err => res.status(500).json(err));
 });
